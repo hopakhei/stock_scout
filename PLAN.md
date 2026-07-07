@@ -264,7 +264,57 @@ score = w1 · velocity_zscore          # 相對自身基線嘅加速度
 4. Google Trends 做第二重驗證後先入 digest
 5. Digest 入面同股票討論信號分開一欄，標明「產品 buzz」類型
 
-## 七、合規注意
+## 七、更多領先數據源（brainstorm）
+
+原則：搵「**行動早過公告、採用早過收入**」嘅數據——邊啲人／系統會喺大眾之前知道啲嘢，
+而佢哋嘅行為又有公開痕跡。
+
+### Tier A — 免費、結構化、高信號（優先接入）
+
+| 源 | 信號 | 攞法 |
+|---|---|---|
+| SEC 13D/13G | Activist 建倉 >5%，最強專業人士行動信號 | EDGAR API，免費 |
+| SEC Form 4 群聚買入 | 多名高管同期自掏腰包，歷史預測力極高 | EDGAR API，免費 |
+| FCC 設備認證 | 新硬件上市前數月必經認證，早過發佈會 | FCC ID 數據庫，公開 |
+| 政府合約 | 國防／IT 承包商贏單早過新聞稿 | USASpending.gov API，免費 |
+| ClinicalTrials.gov | 試驗狀態變更領先公司公告 | 官方 API，免費 |
+| Wikipedia 頁面瀏覽量 | 注意力代理，有學術支持，無人操縱 | Wikimedia API，免費 |
+| GitHub / npm / PyPI 速度 | 開發者採用領先軟件股收入幾季（MDB、DDOG 類） | 免費 API |
+| Hacker News 提及 | Dev tool 爆紅時華爾街未識 | Algolia HN API，免費 |
+| 職位空缺速度 | Greenhouse/Lever careers page 係公開 JSON；招聘加速＝擴張，撤廣告＝警號 | 直接 poll，免費 |
+| Value Investors Club | 頂級 value idea，45 日延遲版免費，學術證明延遲版仍有 alpha | 網站，延遲免費 |
+| 台灣月營收 | 全球獨有嘅月度披露；半導體供應鏈 read-through，領先美股客戶季報 | 公開交易所數據 |
+
+### Tier B — 有價值，第二批考慮
+
+| 源 | 信號 | 障礙 |
+|---|---|---|
+| Earnings call read-through | 大公司 call 提到嘅細供應商，LLM 讀 transcript 做 mapping | 要 transcript 來源＋mapping 工夫 |
+| 投資 podcast transcripts | 專業 podcast 提到嘅細股，聽眾少質素高 | RSS＋轉錄成本 |
+| App 評論速度＋評分趨勢 | 比排行榜更細緻嘅需求信號 | 爬蟲工夫 |
+| 二手市場溢價（StockX/eBay） | 炒價＝需求爆錶（GPU→NVDA、波鞋→DECK） | 爬蟲，覆蓋面窄 |
+| 缺貨／waitlist 監察 | Product page 長期 sold out 係最誠實需求信號 | 要逐產品 curate |
+| 短倉利率／short interest 變化 | 專業空頭行動 | FINRA 數據雙週先出 |
+| 高管 LinkedIn 動向 | 大廠猛人跳去無名細公司 | LinkedIn 反爬，難 scale |
+| 專利申請速度 | 公司投入方向 | 噪音大，行業差異大 |
+| 公司專機航跡（ADS-B Exchange） | M&A 前 CEO jet 飛對方城市（有學術研究） | 難 scale，趣味＞實用 |
+
+### Tier C — 明確跳過
+
+衛星圖／泊車位計數（貴，機構玩法）、信用卡消費 panel（貴）、
+expert networks（入唔到場）、Similarweb 全量 web traffic（貴）、
+Discord/Telegram 私羣（入唔到場，接受盲區）。
+
+### 接入次序建議
+
+呢啲源全部餵入同一套 velocity/novelty 引擎，唔另起爐灶：
+
+1. **Phase 2 加入**：EDGAR（13D/13G、Form 4 群聚）——同原計劃嘅 SEC 部分合併
+2. **Phase 2.5 加入**：Wikipedia 瀏覽量（做任何候選股嘅免費驗證層）、HN、GitHub/npm
+3. **Phase 3 之後逐個試**：FCC、政府合約、ClinicalTrials、職位空缺、VIC、台灣月營收
+4. 每加一個源，先用回測驗證佢有冇增量價值，冇就摘走——源多唔等於好，noise 亦會多
+
+## 八、合規注意
 
 - 只用官方 API 同公開 RSS；唔爬 X、唔爬需要登入嘅內容
 - 純個人研究用途；**唔接自動交易**

@@ -104,7 +104,7 @@ TSLA、NVDA 日日都係 mention 榜首。原始 frequency 只會俾你一張人
               Ticker Extraction & Disambiguation
               （cashtag → universe match → LLM 判別）
                            ▼
-                    Storage（SQLite）
+                 Storage（Supabase/Postgres）
         posts / mentions / tickers / authors / prices
                            ▼
                      Scoring Engine
@@ -115,7 +115,7 @@ TSLA、NVDA 日日都係 mention 榜首。原始 frequency 只會俾你一張人
      （攞 top posts 俾 Claude 總結：論點／催化劑／風險）
                            ▼
                     Daily Digest 輸出
-          （Telegram bot 或 email，top 5–10 候選）
+          （Slack 頻道，top 5–10 候選）
 ```
 
 ### 評分公式（初版，之後用回測調參）
@@ -149,10 +149,10 @@ score = w1 · velocity_zscore          # 相對自身基線嘅加速度
 | Reddit | PRAW + 官方免費 API | 免費層夠每日 batch 用 |
 | RSS | feedparser | Substack / Seeking Alpha / blog 通用 |
 | 行情 | yfinance | 免費攞市值、價量做過濾同回測 |
-| 資料庫 | SQLite（單檔案） | 一人項目零運維；日後需要先升 Postgres |
+| 資料庫 | Supabase（託管 Postgres） | 零運維；用戶有 Supabase MCP connector，可直接對話式查庫 |
 | LLM | Claude API（Haiku 做判別、Sonnet 做總結） | 判別平、總結質量高；每日成本大約 US$0.1–0.5 |
-| 排程 | GitHub Actions schedule | 免費、免伺服器；DB 檔案 commit 返 repo 或用 artifact |
-| 通知 | Telegram bot（首選）或 email | Telegram 免費、即時、手機直達 |
+| 排程 | GitHub Actions schedule | 免費、免伺服器；狀態全在 Supabase |
+| 通知 | Slack 頻道（Bot token＋Block Kit） | emoji reactions 可做 alert 反饋 |
 
 ---
 
@@ -162,10 +162,10 @@ score = w1 · velocity_zscore          # 相對自身基線嘅加速度
 1. Ticker universe 載入（NASDAQ/NYSE/AMEX 名單＋blacklist）
 2. Reddit ingestion：8–12 個 subreddit，分「領先層」同「對照層」
 3. Ticker extraction（cashtag ＋ universe match；LLM 判別後補）
-4. SQLite schema：posts / mentions / tickers / authors / daily_prices
+4. Supabase (Postgres) schema：posts / mentions / tickers / authors / daily_prices
 5. 基線問題：用 ApeWisdom 歷史數據熱啟動 30 日基線
 6. Scoring v1：velocity z-score ＋ novelty ＋ 市值過濾 ＋ WSB 懲罰
-7. LLM 總結 ＋ Telegram digest
+7. LLM 總結 ＋ Slack digest
 8. GitHub Actions 每日排程
 
 ### Phase 2 — 擴源
@@ -197,7 +197,7 @@ score = w1 · velocity_zscore          # 相對自身基線嘅加速度
 | Reddit API / RSS / yfinance / ApeWisdom | US$0 |
 | Claude API（每日 digest） | ~US$3–15 |
 | GitHub Actions | US$0（免費額度內） |
-| Telegram bot | US$0 |
+| Supabase（free tier）／Slack | US$0 |
 | **合計（Phase 1–4）** | **~US$3–15/月** |
 | X API（Phase 5 先考慮） | +US$200/月 |
 

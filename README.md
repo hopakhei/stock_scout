@@ -1,7 +1,7 @@
 # stock_scout
 
 每日自動運行嘅股票偵測哨兵：喺「大眾未知、但已有一小群專業人士討論／行動」嘅階段，
-發現潛力股同爆紅產品，並用 LLM 總結背後嘅故事，以 daily digest 送到 Telegram。
+發現潛力股同爆紅產品，並用 LLM 總結背後嘅故事，以 daily digest 送到 Slack 頻道（資料庫用 Supabase）。
 
 呢個工具係 idea discovery 研究助手，**唔係交易信號**，唔接自動交易。
 

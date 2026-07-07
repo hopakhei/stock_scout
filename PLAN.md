@@ -203,7 +203,68 @@ score = w1 · velocity_zscore          # 相對自身基線嘅加速度
 
 ---
 
-## 六、合規注意
+## 六、產品／服務爆紅偵測（Product Buzz Radar）
+
+除咗直接偵測「股票討論」，仲有一類領先性更強嘅信號：**產品或服務本身突然爆紅**，
+而討論嘅人根本冇諗過買股票。呢個係 Peter Lynch 式「buy what you know」嘅系統化版本，
+對沖基金界叫 alternative data。
+
+### 往績例子
+
+| 產品 buzz | 股票 | 領先時間 |
+|---|---|---|
+| r/fitness／健身圈狂推 Celsius 能量飲品 | CELH | 約一年 |
+| TikTok 美妝圈爆 e.l.f. | ELF | 數季 |
+| r/running 口碑：Hoka／On Running | DECK / ONON | 約一年 |
+| App Store 排行榜：Duolingo、Temu | DUOL / PDD | 一至兩季 |
+| 社交媒體減肥話題：Ozempic | NVO | 數月 |
+
+### 點解呢類信號更好
+
+1. **領先時間更長**：buzz → 銷量 → 季度業績 → 股價，成條鏈以月／季計；
+   論壇股票討論嘅領先時間通常只有幾日
+2. **操縱風險大幅降低**：冇人會為咗炒股去護膚品 sub 做媒——
+   直接繞過咗 pump & dump 問題（品牌 marketing astroturf 仍然存在，但性質唔同）
+3. **共用現有引擎**：同一套 velocity z-score／novelty 邏輯，
+   只係抽取對象由 ticker 變成品牌／產品名
+
+### 新增嘅難點：品牌 → 股票對應層（entity resolution）
+
+產品爆紅 ≠ 有得買。必須加一層對應同過濾：
+
+```
+品牌/產品名 → 母公司 → 係咪上市？ → materiality 檢查
+                                      （產品佔母公司收入比重夠唔夠大？）
+```
+
+- Stanley 水杯爆紅 → 私人公司 → 冇交易可做
+- TikTok → 字節跳動未上市 → 冇交易可做（最多諗周邊受益者）
+- 某產品爆紅但只佔母公司收入 1% → 股價唔會反應 → 過濾走
+
+呢層判斷（品牌識別、母公司查找、收入比重估算）正正係 LLM 加財報數據最擅長嘅工作。
+
+### 信號源（照成本／難度排序）
+
+| 源 | 成本 | 備註 |
+|---|---|---|
+| Reddit 產品類 subs（r/running、r/SkincareAddiction、r/fitness、r/BuyItForLife、r/GamingLeaksAndRumours、r/LocalLLaMA…） | 免費 | 直接用現有 Reddit infra，加多批 subreddit 即可 |
+| Google Trends（pytrends） | 免費 | 做加速度驗證；亦係 TikTok buzz 嘅代理指標 |
+| App Store／Google Play 排行榜 | 免費 | Apple 有官方 RSS；排名衝榜速度係已驗證信號 |
+| Steam（遊戲同時在線／銷量榜） | 免費 API | 對遊戲股（TTWO 等）直接有效 |
+| Amazon Movers & Shakers | 爬蟲（灰色） | 後期先考慮 |
+| TikTok 直接數據 | 實際不可行 | Research API 限學術；用 Google Trends 做 proxy |
+| YouTube 開箱／評測影片速度 | 免費 quota | YouTube Data API |
+
+### 實施位置
+
+排喺 **Phase 2.5**（擴源之後、質量層之前）：
+1. 加產品類 subreddits 落現有 ingestion
+2. 抽取層加品牌／產品 NER（LLM 做，唔係 ticker match）
+3. Entity resolution + materiality 檢查（LLM + yfinance 收入數據）
+4. Google Trends 做第二重驗證後先入 digest
+5. Digest 入面同股票討論信號分開一欄，標明「產品 buzz」類型
+
+## 七、合規注意
 
 - 只用官方 API 同公開 RSS；唔爬 X、唔爬需要登入嘅內容
 - 純個人研究用途；**唔接自動交易**

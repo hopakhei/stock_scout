@@ -1,0 +1,46 @@
+# Scoring weights and thresholds (SPEC.md §5). Tune here, not in code.
+
+prefilter:
+  market: US
+  market_cap_min: 0            # no floor (micro caps included)
+  market_cap_max: null         # no ceiling (owner decision); mainstream_penalty gates instead
+  price_min: 0                 # penny stocks included
+  exclude_otc: false           # OTC included
+  avg_dollar_volume_min: 100000  # only hard filter: zombie stocks with no volume
+
+weights:
+  velocity: 3.0
+  novelty: 3.0
+  cross_source: 2.0
+  author_quality: 2.0
+  action_signal: 4.0
+  mainstream_penalty: 5.0
+  manipulation_risk: 4.0
+
+velocity:
+  baseline_days: 30
+  min_history_days: 5
+  zscore_cap: 10.0
+
+novelty:
+  min_unique_authors: 3
+
+manipulation:
+  penny_otc_base_risk: 0.2     # price < $1 or OTC listing
+
+mainstream:
+  apewisdom_top_n: 50
+  lagging_mentions_threshold: 20   # >= this many lagging-tier mentions today => already viral
+
+alerts:
+  threshold: 8.0
+  max_per_day: 10
+
+candidates:
+  max_enriched: 30             # only top-N pre-scored tickers get market-data enrichment
+
+llm:
+  disambiguation_model: claude-haiku-4-5-20251001
+  summary_model: claude-sonnet-5
+  run_budget_usd: 1.0
+  summary_max_posts: 8

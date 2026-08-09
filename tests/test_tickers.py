@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from stock_scout.extract.tickers import extract_mentions
 from stock_scout.models import RawPost
@@ -9,7 +9,7 @@ UNIVERSE = {"TSLA": "Tesla", "ABCD": "Alpha Biotech", "ALL": "Allstate", "IT": "
 def post(text: str) -> RawPost:
     return RawPost(source_kind="reddit", source_name="stocks", tier="lagging",
                    external_id="x1", url="", title="", body=text,
-                   author_handle="u", posted_at=datetime.now(timezone.utc))
+                   author_handle="u", posted_at=datetime.now(UTC))
 
 
 def symbols(text: str) -> dict[str, str]:

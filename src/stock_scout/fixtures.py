@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from .models import RawPost, TickerFacts
 
 # Fixed clock so fixture posts never straddle a UTC midnight relative to "today"
-FIXTURE_NOW = datetime(2026, 1, 15, 12, 0, tzinfo=timezone.utc)
+FIXTURE_NOW = datetime(2026, 1, 15, 12, 0, tzinfo=UTC)
 
 FIXTURE_UNIVERSE = {
     "ABCD": "Alpha Biotech Corp",

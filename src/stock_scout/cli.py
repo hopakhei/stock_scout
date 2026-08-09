@@ -5,13 +5,13 @@ from __future__ import annotations
 import argparse
 import logging
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from .config import Settings
 
 
 def _auto_slot() -> str:
-    return "premarket" if datetime.now(timezone.utc).hour < 16 else "postclose"
+    return "premarket" if datetime.now(UTC).hour < 16 else "postclose"
 
 
 def _make_repo(settings: Settings, dry_run: bool):

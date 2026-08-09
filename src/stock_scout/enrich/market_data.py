@@ -27,7 +27,7 @@ def enrich_ticker(symbol: str) -> TickerFacts:
         hist = t.history(period="1mo", auto_adjust=True)
         if len(hist) > 0:
             facts.avg_dollar_volume = float((hist["Close"] * hist["Volume"]).mean())
-    except Exception:
+    except Exception:  # noqa: BLE001 — enrichment is best-effort, never fatal
         log.warning("yfinance enrichment failed for %s", symbol)
     return facts
 
@@ -45,6 +45,4 @@ def passes_prefilter(facts: TickerFacts, prefilter: dict) -> bool:
     price_min = prefilter.get("price_min", 0) or 0
     if price_min and facts.price is not None and facts.price < price_min:
         return False
-    if prefilter.get("exclude_otc") and facts.is_otc:
-        return False
-    return True
+    return not (prefilter.get("exclude_otc") and facts.is_otc)

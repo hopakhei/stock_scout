@@ -15,7 +15,7 @@ understands $TSLA-style cashtags.
 from __future__ import annotations
 
 import logging
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import requests
 
@@ -37,7 +37,7 @@ def fetch_x_posts(settings: Settings) -> list[RawPost]:
 
     lookback = timedelta(hours=cfg.get("lookback_hours", 36))
     # recent search only covers ~7 days; start_time must also be >= 10s ago
-    start = datetime.now(timezone.utc) - min(lookback, timedelta(days=6))
+    start = datetime.now(UTC) - min(lookback, timedelta(days=6))
     budget = _RequestBudget(cfg.get("max_requests_per_run", 2))
 
     out: list[RawPost] = []
@@ -106,7 +106,7 @@ def _to_post(tweet: dict, users: dict, q: dict) -> RawPost:
     metrics = tweet.get("public_metrics", {})
     author_created = None
     if user.get("created_at"):
-        author_created = datetime.fromisoformat(user["created_at"].replace("Z", "+00:00"))
+        author_created = datetime.fromisoformat(user["created_at"])
     return RawPost(
         source_kind="x", source_name=q["name"], tier=q.get("tier", "leading"),
         external_id=tweet["id"],
@@ -114,7 +114,7 @@ def _to_post(tweet: dict, users: dict, q: dict) -> RawPost:
         title="", body=tweet.get("text", ""),
         author_handle=user.get("username", tweet.get("author_id", "")),
         author_created_at=author_created,
-        posted_at=datetime.fromisoformat(tweet["created_at"].replace("Z", "+00:00")),
+        posted_at=datetime.fromisoformat(tweet["created_at"]),
         upvotes=metrics.get("like_count", 0),
         num_comments=metrics.get("reply_count", 0),
     )

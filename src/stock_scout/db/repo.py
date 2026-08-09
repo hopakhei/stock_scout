@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 import statistics
 from collections import defaultdict
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from pathlib import Path
 
 from ..models import RawPost, TickerFacts
@@ -215,7 +215,7 @@ class FakeRepo:
 
     def start_run(self) -> int:
         rid = self._nid()
-        self.runs.append({"id": rid, "started_at": datetime.now(timezone.utc)})
+        self.runs.append({"id": rid, "started_at": datetime.now(UTC)})
         return rid
 
     def finish_run(self, run_id, status, stats, llm_cost_usd) -> None:

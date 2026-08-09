@@ -1,6 +1,5 @@
 from stock_scout.models import TickerFacts
-from stock_scout.score.composite import (composite_score, manipulation_risk_v1,
-                                         velocity_zscore)
+from stock_scout.score.composite import composite_score, manipulation_risk_v1, velocity_zscore
 
 WEIGHTS = {"velocity": 3.0, "novelty": 3.0, "cross_source": 2.0, "author_quality": 2.0,
            "action_signal": 4.0, "mainstream_penalty": 5.0, "manipulation_risk": 4.0}

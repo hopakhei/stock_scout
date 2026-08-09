@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import logging
 import time
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import requests
 
@@ -29,7 +29,7 @@ BASE = "https://www.reddit.com"
 
 def fetch_reddit_posts(settings: Settings) -> list[RawPost]:
     cfg = settings.sources["reddit"]
-    cutoff = datetime.now(timezone.utc) - timedelta(hours=cfg.get("lookback_hours", 36))
+    cutoff = datetime.now(UTC) - timedelta(hours=cfg.get("lookback_hours", 36))
 
     if settings.reddit_client_id and settings.reddit_client_secret:
         fetch_one = _praw_fetcher(settings, cfg, cutoff)
@@ -87,7 +87,7 @@ def _json_fetcher(cfg: dict, cutoff: datetime):
         listing = client.get(f"/r/{name}/new.json", limit=min(per_sub, 100)) or {}
         for child in listing.get("data", {}).get("children", []):
             d = child["data"]
-            posted = datetime.fromtimestamp(d["created_utc"], tz=timezone.utc)
+            posted = datetime.fromtimestamp(d["created_utc"], tz=UTC)
             if posted < cutoff:
                 continue
             posts.append(RawPost(
@@ -113,7 +113,7 @@ def _json_comments(client: _JsonClient, post: RawPost, sub_name: str, tier: str,
     out: list[RawPost] = []
     try:
         thread = client.get(f"/comments/{post.external_id}.json", limit=limit, depth=1)
-    except Exception:
+    except Exception:  # noqa: BLE001 — comments are optional extras
         log.warning("comment fetch failed for %s", post.external_id)
         return out
     if not isinstance(thread, list) or len(thread) < 2:
@@ -129,7 +129,7 @@ def _json_comments(client: _JsonClient, post: RawPost, sub_name: str, tier: str,
             source_kind="reddit", source_name=sub_name, tier=tier,
             external_id=d["id"], url=f"{BASE}{d.get('permalink', '')}",
             title="", body=body, author_handle=d.get("author") or "[deleted]",
-            posted_at=datetime.fromtimestamp(d["created_utc"], tz=timezone.utc),
+            posted_at=datetime.fromtimestamp(d["created_utc"], tz=UTC),
             upvotes=d.get("score", 0), num_comments=0,
         ))
     return out
@@ -165,7 +165,7 @@ def _fetch_subreddit(reddit, name: str, tier: str, cfg: dict, cutoff: datetime) 
         if s.id in seen:
             continue
         seen.add(s.id)
-        posted = datetime.fromtimestamp(s.created_utc, tz=timezone.utc)
+        posted = datetime.fromtimestamp(s.created_utc, tz=UTC)
         if posted < cutoff:
             continue
         author = s.author.name if s.author else "[deleted]"
@@ -185,7 +185,7 @@ def _fetch_comments(submission, sub_name: str, tier: str, cfg: dict) -> list[Raw
     try:
         submission.comments.replace_more(limit=0)
         top_level = submission.comments[: cfg.get("comments_per_post", 30)]
-    except Exception:
+    except Exception:  # noqa: BLE001 — comments are optional extras
         return out
     for c in top_level:
         body = getattr(c, "body", "") or ""
@@ -196,7 +196,7 @@ def _fetch_comments(submission, sub_name: str, tier: str, cfg: dict) -> list[Raw
             source_kind="reddit", source_name=sub_name, tier=tier,
             external_id=c.id, url=f"https://reddit.com{c.permalink}",
             title="", body=body, author_handle=author,
-            posted_at=datetime.fromtimestamp(c.created_utc, tz=timezone.utc),
+            posted_at=datetime.fromtimestamp(c.created_utc, tz=UTC),
             upvotes=getattr(c, "score", 0), num_comments=0,
         ))
     return out

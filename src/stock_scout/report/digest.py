@@ -23,8 +23,8 @@ def _candidate_lines(rank: int, c: Candidate) -> list[str]:
     lines = [
         f"🎯 #{rank}  ${c.symbol} — {c.facts.name or c.symbol}（{_fmt_cap(c.facts.market_cap)}）",
         f"分數 {b.total:.1f} ｜ 操縱風險：{RISK_EMOJI[c.risk_label]} {c.risk_label}",
-        f"▸ 拆解：velocity z={b.velocity_z:.1f} · novelty={b.novelty:.0f} · "
-        f"{b.cross_source} 個 leading 源 · 作者質素 {b.author_quality:.2f}",
+        (f"▸ 拆解：velocity z={b.velocity_z:.1f} · novelty={b.novelty:.0f} · "
+         f"{b.cross_source} 個 leading 源 · 作者質素 {b.author_quality:.2f}"),
     ]
     if c.facts.is_otc or (c.facts.price is not None and c.facts.price < 1.0):
         lines.append("⚠️ Penny/OTC — 操縱風險基礎分已計入，注意流動性")

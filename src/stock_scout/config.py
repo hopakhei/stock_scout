@@ -27,7 +27,7 @@ class Settings:
     slack_channel_id: str = ""
 
     @classmethod
-    def load(cls, config_dir: Path | None = None) -> "Settings":
+    def load(cls, config_dir: Path | None = None) -> Settings:
         cfg = config_dir or CONFIG_DIR
         with open(cfg / "sources.yaml") as f:
             sources = yaml.safe_load(f)

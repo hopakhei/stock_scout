@@ -9,12 +9,18 @@ from __future__ import annotations
 
 import logging
 from collections import defaultdict
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 
 from .config import Settings
-from .fixtures import (FIXTURE_FACTS, FIXTURE_MAINSTREAM, FIXTURE_NOW,
-                       FIXTURE_STORY, FIXTURE_UNIVERSE, fixture_posts)
+from .fixtures import (
+    FIXTURE_FACTS,
+    FIXTURE_MAINSTREAM,
+    FIXTURE_NOW,
+    FIXTURE_STORY,
+    FIXTURE_UNIVERSE,
+    fixture_posts,
+)
 from .models import Candidate, RawPost, TickerFacts
 from .score.composite import composite_score, manipulation_risk_v1, velocity_zscore
 from .summarize.budget import Budget
@@ -27,7 +33,7 @@ DIGEST_DIR = Path(__file__).parents[2] / "digests"
 def run_pipeline(settings: Settings, repo, *, dry_run: bool = False,
                  slot: str = "premarket", today: date | None = None) -> dict:
     if today is None:
-        today = FIXTURE_NOW.date() if dry_run else datetime.now(timezone.utc).date()
+        today = FIXTURE_NOW.date() if dry_run else datetime.now(UTC).date()
     run_id = repo.start_run()
     budget = Budget(settings.scoring["llm"].get("run_budget_usd", 1.0))
     stats: dict = {"slot": slot, "dry_run": dry_run}

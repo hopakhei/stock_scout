@@ -1,7 +1,8 @@
 """Ingestion transports parse fixtures correctly without hitting the network."""
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from typing import ClassVar
 from unittest.mock import patch
 
 from stock_scout.config import Settings
@@ -9,7 +10,7 @@ from stock_scout.ingest import x as x_mod
 from stock_scout.ingest.reddit import _json_comments, _json_fetcher
 
 CONFIG_DIR = Path(__file__).parents[1] / "config"
-NOW = datetime.now(timezone.utc)
+NOW = datetime.now(UTC)
 
 
 def _listing(children):
@@ -137,7 +138,7 @@ def test_x_429_stops_gracefully():
 
     class Resp:
         status_code = 429
-        headers = {}
+        headers: ClassVar[dict] = {}
         def raise_for_status(self): raise AssertionError("must not raise on 429")
         def json(self): return {}
 

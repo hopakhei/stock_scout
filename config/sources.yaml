@@ -1,0 +1,57 @@
+# All ingestion sources. Adding/removing a source is a config change, not a code change.
+# tier: leading  = niche/professional venues, the actual signal
+#       lagging  = mass venues, used as an exclusion signal (already-viral penalty)
+#       action   = filings / actions by professionals (Phase 2)
+
+reddit:
+  # No credentials needed: without REDDIT_CLIENT_ID/SECRET the public JSON
+  # endpoints are used (slow but free); with them, PRAW (faster).
+  lookback_hours: 36
+  posts_per_subreddit: 100
+  comments_per_post: 30
+  # public-JSON transport only: spacing between requests and how many of the
+  # most-discussed posts per subreddit get their comments fetched
+  request_delay_seconds: 6
+  comment_posts_per_subreddit: 10
+  subreddits:
+    # -- leading --
+    - {name: SecurityAnalysis, tier: leading, enabled: true}
+    - {name: valueinvesting, tier: leading, enabled: true}
+    - {name: UndervaluedStonks, tier: leading, enabled: true}
+    - {name: Vitards, tier: leading, enabled: true}
+    - {name: pennystocks, tier: leading, enabled: true}
+    - {name: Biotechplays, tier: leading, enabled: true}
+    - {name: SPACs, tier: leading, enabled: true}
+    - {name: Shortsqueeze, tier: leading, enabled: true}
+    # -- lagging (exclusion signal) --
+    - {name: wallstreetbets, tier: lagging, enabled: true}
+    - {name: stocks, tier: lagging, enabled: true}
+    - {name: investing, tier: lagging, enabled: true}
+
+# X (Twitter) API v2 recent search. Needs X_BEARER_TOKEN and a paid tier:
+# Free tier has ~100 reads/month and no search -> keep disabled.
+# Basic tier (~10-15K post reads/month, 2 runs/day) affords roughly
+# max_requests_per_run * 100 tweets per run; 2 * 100 * 60 runs = 12K/month.
+x:
+  enabled: false
+  lookback_hours: 36
+  max_requests_per_run: 2
+  max_results_per_request: 100
+  queries:
+    # discovery phrases instead of $cashtag operators (those need Pro+);
+    # tickers are extracted from tweet text downstream
+    - name: fintwit-writeups
+      tier: leading
+      enabled: true
+      query: '("deep dive" OR "write-up" OR "initiated a position" OR "under the radar") (stock OR ticker OR "market cap") lang:en -is:retweet -is:reply'
+
+apewisdom:
+  enabled: true
+  # used for: (a) mainstream/already-viral flag, (b) baseline warm start
+  filter: all-stocks
+  top_n_mainstream: 50
+
+# Phase 2:
+# rss:
+#   feeds:
+#     - {name: some-substack, url: https://example.substack.com/feed, tier: leading, enabled: false}

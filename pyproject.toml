@@ -1,0 +1,38 @@
+[project]
+name = "stock-scout"
+version = "0.1.0"
+description = "Daily sentinel that surfaces under-the-radar stocks gaining traction among professionals"
+requires-python = ">=3.11"
+dependencies = [
+    "requests>=2.31",
+    "PyYAML>=6.0",
+    "psycopg[binary]>=3.1",
+    "anthropic>=0.40",
+    "yfinance>=0.2.40",
+]
+
+[project.optional-dependencies]
+praw = [
+    "praw>=7.7",  # only needed if REDDIT_CLIENT_ID/SECRET are configured
+]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.4",
+]
+
+[project.scripts]
+stock-scout = "stock_scout.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/stock_scout"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

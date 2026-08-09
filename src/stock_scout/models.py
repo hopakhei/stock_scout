@@ -8,7 +8,7 @@ from datetime import datetime
 
 @dataclass
 class RawPost:
-    source_kind: str          # reddit | rss | ...
+    source_kind: str          # reddit | x | rss | ...
     source_name: str          # subreddit / feed name
     tier: str                 # leading | lagging | action
     external_id: str

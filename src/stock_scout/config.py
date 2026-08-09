@@ -21,6 +21,7 @@ class Settings:
     database_url: str = ""
     reddit_client_id: str = ""
     reddit_client_secret: str = ""
+    x_bearer_token: str = ""
     anthropic_api_key: str = ""
     slack_bot_token: str = ""
     slack_channel_id: str = ""
@@ -38,6 +39,7 @@ class Settings:
             database_url=os.environ.get("DATABASE_URL", ""),
             reddit_client_id=os.environ.get("REDDIT_CLIENT_ID", ""),
             reddit_client_secret=os.environ.get("REDDIT_CLIENT_SECRET", ""),
+            x_bearer_token=os.environ.get("X_BEARER_TOKEN", ""),
             anthropic_api_key=os.environ.get("ANTHROPIC_API_KEY", ""),
             slack_bot_token=os.environ.get("SLACK_BOT_TOKEN", ""),
             slack_channel_id=os.environ.get("SLACK_CHANNEL_ID", ""),

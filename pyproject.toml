@@ -4,7 +4,6 @@ version = "0.1.0"
 description = "Daily sentinel that surfaces under-the-radar stocks gaining traction among professionals"
 requires-python = ">=3.11"
 dependencies = [
-    "praw>=7.7",
     "requests>=2.31",
     "PyYAML>=6.0",
     "psycopg[binary]>=3.1",
@@ -13,6 +12,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+praw = [
+    "praw>=7.7",  # only needed if REDDIT_CLIENT_ID/SECRET are configured
+]
 dev = [
     "pytest>=8.0",
     "ruff>=0.4",

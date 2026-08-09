@@ -21,20 +21,20 @@ stock-scout run --dry-run    # 假數據走通全流程，唔使任何 credentia
 ## 部署（GitHub Actions，每日兩次）
 
 1. 開 Supabase project，攞 connection string
-2. 開 Reddit app（script type）攞 client id/secret：https://www.reddit.com/prefs/apps
-3. 開 Slack app，俾 bot `chat:write` + `reactions:read` scope，邀請入目標頻道
-4. 喺 repo Settings → Secrets and variables → Actions 加入：
+2. 開 Slack app，俾 bot `chat:write` + `reactions:read` scope，邀請入目標頻道
+3. 喺 repo Settings → Secrets and variables → Actions 加入：
 
 | Secret | 內容 |
 |---|---|
 | `DATABASE_URL` | Supabase Postgres connection string |
-| `REDDIT_CLIENT_ID` / `REDDIT_CLIENT_SECRET` | Reddit API |
 | `ANTHROPIC_API_KEY` | Claude API（故事總結） |
 | `SLACK_BOT_TOKEN` | Slack bot token（xoxb-…） |
 | `SLACK_CHANNEL_ID` | 目標頻道 ID（C…） |
+| `REDDIT_CLIENT_ID` / `REDDIT_CLIENT_SECRET` | **可選**。冇嘅話會自動改用 Reddit 公開 JSON endpoint（慢啲但唔使申請 app）；有嘅話用官方 API（要 `pip install -e ".[praw]"`） |
+| `X_BEARER_TOKEN` | **可選**。X (Twitter) API v2 bearer token，另外要喺 `config/sources.yaml` 將 `x.enabled` 設做 `true`。注意：Free tier 冇 search，用唔到；要 Basic tier 或以上 |
 
-5. 初始化 schema：本地 `DATABASE_URL=... stock-scout init-db`
-6. 完成——`.github/workflows/daily.yml` 會喺美股盤前（12:00 UTC）同收市後（21:30 UTC）自動運行；
+4. 初始化 schema：本地 `DATABASE_URL=... stock-scout init-db`
+5. 完成——`.github/workflows/daily.yml` 會喺美股盤前（12:00 UTC）同收市後（21:30 UTC）自動運行；
    digest 同步存檔喺 `digests/`
 
 ## 狀態

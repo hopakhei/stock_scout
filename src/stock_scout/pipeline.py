@@ -87,8 +87,8 @@ def _collect_feedback(repo, slack, today: date) -> None:
 
 def _fetch_posts(settings: Settings) -> list[RawPost]:
     from .ingest.reddit import fetch_reddit_posts
-    settings.require("reddit_client_id", "reddit_client_secret")
-    return fetch_reddit_posts(settings)
+    from .ingest.x import fetch_x_posts
+    return fetch_reddit_posts(settings) + fetch_x_posts(settings)
 
 
 def _load_universe() -> dict[str, str]:

@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
-# USD per million tokens (input, output). Update when Anthropic pricing changes.
+# USD per million tokens (input, output). Update when provider pricing changes.
 PRICES = {
     "claude-haiku-4-5-20251001": (1.00, 5.00),
     "claude-sonnet-5": (3.00, 15.00),
+    "deepseek-chat": (0.28, 0.42),      # cache-miss input price (worst case)
+    "deepseek-reasoner": (0.28, 0.42),
 }
 DEFAULT_PRICE = (3.00, 15.00)
 

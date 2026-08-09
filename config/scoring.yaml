@@ -40,7 +40,8 @@ candidates:
   max_enriched: 30             # only top-N pre-scored tickers get market-data enrichment
 
 llm:
-  disambiguation_model: claude-haiku-4-5-20251001
-  summary_model: claude-sonnet-5
+  provider: deepseek           # deepseek | anthropic
+  summary_model: deepseek-chat
+  disambiguation_model: deepseek-chat
   run_budget_usd: 1.0
   summary_max_posts: 8

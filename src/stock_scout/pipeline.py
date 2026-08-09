@@ -199,8 +199,8 @@ def _passes_prefilter(facts: TickerFacts, prefilter: dict) -> bool:
 
 
 def _summarize(candidate: Candidate, settings: Settings, budget: Budget) -> dict | None:
-    from .summarize.story import summarize_candidate
-    if not settings.anthropic_api_key:
+    from .summarize.story import llm_api_key, summarize_candidate
+    if not llm_api_key(settings):
         return None
     return summarize_candidate(candidate, settings, budget)
 
